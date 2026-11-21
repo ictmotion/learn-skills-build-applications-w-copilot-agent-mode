@@ -1,11 +1,15 @@
+import { useCallback } from 'react';
+import { getJson } from '../api/client.js';
 import { CapabilityCard } from './CapabilityCard.js';
 
 export default function Activities() {
+  const loadData = useCallback(() => getJson<unknown>('/api/activities'), []);
+
   return (
     <CapabilityCard
       title="Activities"
       description="Track student activity minutes and points."
-      endpoint="/api/activities"
+      loadData={loadData}
       itemsKey="activities"
       emptyMessage="No activities yet."
       renderItem={(activity) => (

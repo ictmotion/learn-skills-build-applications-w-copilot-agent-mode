@@ -1,10 +1,9 @@
 import { useEffect, useState, type ReactNode } from 'react';
-import { getJson } from '../api/client.js';
 
 type Props = {
   title: string;
   description: string;
-  endpoint: string;
+  loadData: () => Promise<unknown>;
   itemsKey: string;
   emptyMessage: string;
   renderItem: (item: Record<string, unknown>) => ReactNode;
@@ -14,7 +13,7 @@ function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
 }
 
-export function CapabilityCard({ title, description, endpoint, itemsKey, emptyMessage, renderItem }: Props) {
+export function CapabilityCard({ title, description, loadData, itemsKey, emptyMessage, renderItem }: Props) {
   const [items, setItems] = useState<Record<string, unknown>[] | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -24,7 +23,7 @@ export function CapabilityCard({ title, description, endpoint, itemsKey, emptyMe
     setLoading(true);
     setError(null);
 
-    getJson<unknown>(endpoint)
+    loadData()
       .then((response) => {
         const values = isRecord(response) ? response[itemsKey] : undefined;
         if (!Array.isArray(values)) throw new Error(`Unexpected response for ${title.toLowerCase()}`);
@@ -42,7 +41,7 @@ export function CapabilityCard({ title, description, endpoint, itemsKey, emptyMe
     return () => {
       cancelled = true;
     };
-  }, [endpoint, itemsKey, title]);
+  }, [loadData, itemsKey, title]);
 
   return (
     <section className="card h-100">
