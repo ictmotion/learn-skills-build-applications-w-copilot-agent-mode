@@ -28,28 +28,19 @@ OctoFit Tracker is a three-tier application for a school fitness program. The st
 
 ## Implementation decisions
 
-Implementation decisions
+- Presentation tier decision: Use the existing React 19 and Vite frontend with the shared API client. Keep business logic in the backend and limit the frontend to displaying data and submitting requests.
 
-1. Presentation tier decision:
-   Use the existing React 19 and Vite frontend with the shared API client. Keep business logic in the backend and limit the frontend to displaying data and submitting requests.
+- Logic tier decision: Implement validation and business rules in the Express routes and services. Ensure invalid IDs and missing resources return deliberate 4xx responses rather than Mongoose cast errors.
 
-2. Logic tier decision:
-   Implement validation and business rules in the Express routes and services. Ensure invalid IDs and missing resources return deliberate 4xx responses rather than Mongoose cast errors.
+- Data tier decision: Use the existing Mongoose models for persistence. Validate referenced users and teams before creating activity records and use seeded data where required.
 
-3. Data tier decision:
-   Use the existing Mongoose models for persistence. Validate referenced users and teams before creating activity records and use seeded data where required.
+- Activity tracking approach: Validate userId and teamId, confirm both records exist, calculate points from activity data, store occurredAt when creating activities, and return appropriate 4xx errors for invalid input.
 
-4. Activity tracking approach:
-   Validate userId and teamId, confirm both records exist, calculate points from activity data, store occurredAt when creating activities, and return appropriate 4xx errors for invalid input.
+- Team management approach: Support listing and creating teams. Require a non-empty name field and return HTTP 400 when a name is missing.
 
-5. Team management approach:
-   Support listing and creating teams. Require a non-empty name field and return HTTP 400 when a name is missing.
+- Leaderboard approach: Aggregate activity points by team, sort totals in descending order, and assign 1-based ranks before returning results.
 
-6. Leaderboard approach:
-   Aggregate activity points by team, sort totals in descending order, and assign 1-based ranks before returning results.
-
-7. Workout suggestions approach:
-   Find the seeded user by email, analyze the user’s goal and recent activities, and return recommendations whose first suggestion aligns with the user’s goal or activity history. Return 404 when the user is not found.
+- Workout suggestions approach: Find the seeded user by email, analyze the user’s goal and recent activities, and return recommendations whose first suggestion aligns with the user’s goal or activity history. Return 404 when the user is not found.
 
 ## Test plan
 
